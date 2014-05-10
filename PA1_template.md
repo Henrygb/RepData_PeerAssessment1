@@ -4,11 +4,11 @@
 ## Loading and preprocessing the data
 
 The data is provived in a zipped file containing `activity data`. 
-It has 175568 observations of five-minute intervals, though some are incomplete.
+It has 17568 observations of five-minute intervals, though some are incomplete.
 
 There are 12 five-minute intervals in an hour and so in a 24-hour day there are
 12*24=288 five-minute intervals.  
-The activity set covers 61 days: note that 61*288=175568.
+The activity set covers 61 days: note that 61*288=17568.
 
 
 ```r
@@ -22,7 +22,7 @@ date()  # today's download date
 ```
 
 ```
-## [1] "Sat May 10 14:26:47 2014"
+## [1] "Sat May 10 20:00:14 2014"
 ```
 
 ```r
@@ -55,7 +55,6 @@ interval it occurs in, though the format of each of these can be adjusted
 to a more usable format. 
 It will also be useful to know later whether particular days 
 are weekdays or weekends. 
-
 
 
 
@@ -100,11 +99,11 @@ length(unique(activitycomplete$date))  # number different days with complete dat
 ```
 
 ```r
-length(unique(activitycomplete$date)) * 24 * (60/12)  # 5-minute intervals those days
+length(unique(activitycomplete$date)) * 24 * (60/5)  # 5-minute intervals those days
 ```
 
 ```
-## [1] 6360
+## [1] 15264
 ```
 
 
@@ -113,7 +112,8 @@ length(unique(activitycomplete$date)) * 24 * (60/12)  # 5-minute intervals those
 
 The mean number of steps taken each day in complete cases was just over 10766 
 (the median is close at 10765), though the range is wide: the 
-lowest number was just 41, while the largest was 21194.
+lowest number was just 41, while the largest was 21194. 
+The histogram shows the most frequent bar between 10000 and 11000. 
 
 
 ```r
@@ -156,8 +156,8 @@ abline(v = mean(dailysteps))  # show mean on histogram
 Mean numbers of steps are almost zero until shortly before 06:00, presumably 
 reflecting sleeping hours followed by waking-up.  
 They reach a peak in the interval at 08:35, 
-possibly indicating a habitual time for 
-travelling to work each morning, though there is no corresponding evening peak, 
+possibly indicating a habitual time for travelling to work each morning, 
+though there is no corresponding evening peak, 
 which might suggest a greater variety in returning home or a different means 
 of travel.  From about 19:00 onwards, the mean number of steps gradually returns 
 towards zero again, suggesting going to sleep, though not necessaryily at the 
@@ -167,6 +167,7 @@ same time each evening
 ```r
 #calculate and plot mean number of steps for each of five-minute intervals 
 #             across the days where there is information  
+
 #function to calculate mean for different times of day (also used later)
 av5minsteps <- function(activitydf, checkdayend="all"){
   if(checkdayend != "all"){activitydf <-
@@ -196,8 +197,9 @@ with(av5mincomplete,                             #dataframe to use
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 ```r
+#find peak interval for number of steps
 av5mincomplete$interval[which(av5mincomplete$mean5minsteps == 
-                        max(av5mincomplete$mean5minsteps))] #peak interval
+                        max(av5mincomplete$mean5minsteps))] 
 ```
 
 ```
@@ -212,7 +214,7 @@ We already know that 61-53=8 days have missing values.
 One approach to imputing values for the intervals in these days is to take the 
 means for each five-minute interval just calculated and apply these to the 
 missing days.  Since numbers of steps are integers, a slight adjustment 
-to round the means to an integer might be sensible.
+to round the means for each interval to an integer might be sensible.
 
 
 ```r
@@ -224,7 +226,7 @@ activityrevised[is.na(activityrevised$steps), "steps"] <- round(activityrevised[
 ```
 
 
-This changes the calculated mean and the median number of steps per day by a very small amount to 10766 and 10762 respectively.  The tiny change should not be a suprise: we have imputed 8 days which  each have a number of total number of steps (10762) very close to the daily mean and median.  The change in the histogram is more obvious as this central peak rises as an artifact of including the imputed days.    
+This changes the calculated mean and the median number of steps per day by a very small amount to 10766 and 10762 respectively.  The tiny change should not be a suprise: we have imputed 8 days which  each have a number of total number of steps (10762) very close to the daily mean and median.  The change in the histogram is more obvious as the central peak rises as an artifact of including the 8 imputed days, all with the dame number of steps.    
 
 
 
@@ -249,12 +251,13 @@ median(dailysteps)
 ```r
 hist(dailysteps, col = "red", main = "Histogram of steps each day including imputed days", 
     breaks = 20)
-abline(v = mean(dailysteps))
+abline(v = mean(dailysteps))  # show mean on histogram
 ```
 
 ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 ```r
+
 sum(av5mincomplete$mean5minsteps)  #Another way of calculating mean before imputation
 ```
 
@@ -274,9 +277,9 @@ sum(round(av5mincomplete$mean5minsteps))  #Daily steps for imputed days - note r
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Since the mean pattern of steps through the day appears at first sight to be work related, especially around 09:00, it is worth considering wehter the pattern varies between weekdays and weekends. 
+Since the mean pattern of steps through the day appears at first sight to be work related, especially around 09:00, it is worth considering whether the pattern varies between weekdays and weekends. 
 
-In fact there is and it is visible in the graphs: at weekends, waking-up seem more often to be broadly around 08:00 than a precise time just before 06:00, the steps peaking at around 09:00 is no longer there, thore steps are taken in the afternoon, and there is a slight suggestion of a later bedtime, often perhaps about 21:00 rather than about 19:30.
+In fact there is and it is visible in the graphs: at weekends, waking-up seem more often to be broadly around 08:00 than a precise time just before 06:00, the steps peaking at around 09:00 is no longer there, more steps are taken in the afternoon at the weekend, and there is a slight suggestion of a later bedtime, often perhaps about 21:00 rather than about 19:30.
 
 
 
@@ -300,4 +303,4 @@ with(rbind(av5minsteps(activityrevised,"weekend"),
 
 
 
-These differences might have been more accentuated if the imputation of missing values had not ignored weekdays and weekends, or if the imputed values had not been included in the charts.    
+These differences might have been more accentuated if the imputation of missing values had not ignored weekdays and weekends, or if the imputed values had not been included in the charts. THere might be other patterns worth investigating in future: Saturdays and Sundays might have different patterns, and Fridy evenings might not be the same as other weekday evenings.   
