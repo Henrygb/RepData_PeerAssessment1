@@ -1,3 +1,18 @@
+## Reproducible Research: Peer Assessment 1
+
+This repository is my submission for Peer Assessment 1 of the 
+Reproducible Research Coursera course from 
+Roger D. Peng, Jeff Leek, and Brian Caffo of the 
+Johns Hopkins Bloomberg School of Public Health.
+
+The repository contains various files including 
+
+ * `PA1_template.Rmd` - an R markdown document both describing the analysis and containing the R code to do the analysis
+ * `PA1_template.md` and `PA1_template.html` produced by the knitr package making the output visible
+ * several histograms and line graphs in the `figures/` directory produced as part of the analysis 
+ * other documents which were originally forked from [rdpeng/RepData_PeerAssessment1](https://github.com/rdpeng/RepData_PeerAssessment1) with instructions, including the latter part of this document.
+ 
+ 
 ## Introduction
 
 It is now possible to collect a large amount of data about personal
